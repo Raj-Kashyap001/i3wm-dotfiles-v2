@@ -44,6 +44,10 @@ public:
         return checkIfInstalled("~/.config/polybar");
     }
 
+    Q_INVOKABLE bool isFastfetchInstalled() {
+        return checkIfInstalled("~/.config/fastfetch");
+    }
+
     Q_INVOKABLE void installDunst() {
         emit statusMessage("Installing Dunst...");
         createSymlinks("dunst", "~/.config/dunst");
@@ -79,7 +83,12 @@ public:
         createSymlinks("polybar", "~/.config/polybar");
         emit statusMessage("Polybar installed.");
     }
-
+    Q_INVOKABLE void installFastfetch() {
+        emit statusMessage("Installing Fastfetch...");
+        createSymlinks("fastfetch", "~/.config/fastfetch");
+        emit statusMessage("Fastfetch installed.");
+    }
+ 
     Q_INVOKABLE void backupAll() {
         emit statusMessage("Backing up all dotfiles...");
         backupDirectory("~/.config/dunst", "dunst");
@@ -88,6 +97,7 @@ public:
         backupDirectory("~/.config/kitty", "kitty");
         backupDirectory("~/.config/picom", "picom");
         backupDirectory("~/.config/polybar", "polybar");
+        backupDirectory("~/.config/fastfetch", "fastfetch");
         emit statusMessage("Backup completed.");
     }
 
@@ -99,6 +109,7 @@ public:
         restoreDirectory("~/.config/kitty", "kitty");
         restoreDirectory("~/.config/picom", "picom");
         restoreDirectory("~/.config/polybar", "polybar");
+        restoreDirectory("~/.config/fastfetch", "fastfetch");
         emit statusMessage("Restore completed.");
     }
 

@@ -7,7 +7,7 @@ ApplicationWindow {
     id: window
     visible: true
     width: 850
-    height: 650
+    height: 700
     title: "i3wm Dotfiles Manager"
     flags: Qt.FramelessWindowHint | Qt.Window
 
@@ -15,23 +15,22 @@ ApplicationWindow {
     Material.theme: isDarkTheme ? Material.Dark : Material.Light
     Material.accent: Material.Blue
 
-    // Main Background
     Rectangle {
         anchors.fill: parent
         color: Material.backgroundColor
-        border.color: "#333" 
+        border.color: isDarkTheme ? "#333" : "#ddd"
         border.width: 1
 
         ColumnLayout {
             anchors.fill: parent
             spacing: 0
 
-            // --- Custom Title Bar ---
+            // --- FIXED CUSTOM TITLE BAR ---
             Rectangle {
                 id: titleBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: 48
-                color: Qt.darker(Material.primaryColor, 1.2)
+                color: isDarkTheme ? "#1a1a1a" : Material.primaryColor
 
                 DragHandler {
                     onActiveChanged: if (active) window.startSystemMove()
@@ -40,61 +39,70 @@ ApplicationWindow {
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 16
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: 4
+                    spacing: 0
 
                     Image {
                         source: "qrc:/icons/appicon.png"
-                        Layout.preferredWidth: 22
-                        Layout.preferredHeight: 22
+                        Layout.preferredWidth: 20
+                        Layout.preferredHeight: 20
                     }
 
                     Label {
                         text: "i3wm Dotfiles Manager"
-                        font.pixelSize: 14
+                        font.pixelSize: 13
                         font.weight: Font.Medium
                         color: "white"
-                        Layout.leftMargin: 8
+                        Layout.leftMargin: 10
                     }
                     
                     Label {
-                        text: dotfilesManager.getVersion()
-                        font.pixelSize: 12
+                        text: "v" + dotfilesManager.getVersion()
+                        font.pixelSize: 11
                         color: "#888"
+                        Layout.leftMargin: 8
                         Layout.fillWidth: true
                     }
 
+                    // Theme Toggle
                     Button {
                         id: themeToggleBtn
+                        Layout.preferredWidth: 46
+                        Layout.preferredHeight: 46
                         flat: true
-                        Layout.preferredWidth: 48
-                        Layout.preferredHeight: 48
-                        contentItem: Image {
-                            source: isDarkTheme ? "qrc:/icons/moon.svg" : "qrc:/icons/sun.svg"
-                            fillMode: Image.PreserveAspectFit
-                            opacity: themeToggleBtn.hovered ? 1.0 : 0.7
-                        }
-                        background: Rectangle {
-                            color: themeToggleBtn.hovered ? '#444' : "transparent"
-                            radius: 4
-                        }
                         onClicked: isDarkTheme = !isDarkTheme
+                        
+                        contentItem: Item {
+                            Image {
+                                anchors.centerIn: parent
+                                source: isDarkTheme ? "qrc:/icons/moon.svg" : "qrc:/icons/sun.svg"
+                                sourceSize.width: 18
+                                sourceSize.height: 18
+                                opacity: themeToggleBtn.hovered ? 1.0 : 0.8
+                            }
+                        }
                     }
 
+                    // Close Button
                     Button {
                         id: closeBtn
+                        Layout.preferredWidth: 46
+                        Layout.preferredHeight: 46
                         flat: true
-                        Layout.preferredWidth: 48
-                        Layout.preferredHeight: 48
-                        contentItem: Image {
-                            source: "qrc:/icons/close-white.svg"
-                            fillMode: Image.PreserveAspectFit
-                            opacity: closeBtn.hovered ? 1.0 : 0.7
-                        }
-                        background: Rectangle {
-                            color: closeBtn.hovered ? '#d44f5a' : "transparent"
-                            radius: 4
-                        }
                         onClicked: Qt.quit()
+                        
+                        background: Rectangle {
+                            color: closeBtn.hovered ? "#e81123" : "transparent"
+                        }
+                        
+                        contentItem: Item {
+                            Image {
+                                anchors.centerIn: parent
+                                source: "qrc:/icons/close-white.svg"
+                                sourceSize.width: 16
+                                sourceSize.height: 16
+                            }
+                        }
                     }
                 }
             }
@@ -103,44 +111,71 @@ ApplicationWindow {
             Pane {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.margins: 20
-                Material.elevation: 2
+                padding: 25
 
                 ColumnLayout {
                     anchors.fill: parent
                     spacing: 20
 
+                    // Header Section
                     ColumnLayout {
                         spacing: 4
-                        Label { text: "System Installation"; font.pixelSize: 22; font.weight: Font.Bold }
-                        Label { text: "Select components to symlink to your home directory."; color: Material.secondaryTextColor }
-                    }
-
-                    // Options Card
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 140
-                        color: Qt.rgba(1, 1, 1, 0.03)
-                        radius: 8
-                        border.color: "#333"
-
-                        GridLayout {
-                            anchors.fill: parent; anchors.margins: 16
-                            columns: 3; rowSpacing: 10; columnSpacing: 30
-                            CheckBox { id: dunstCheck; text: "Dunst"; checked: dotfilesManager.isDunstInstalled() }
-                            CheckBox { id: fishCheck; text: "Fish"; checked: dotfilesManager.isFishInstalled() }
-                            CheckBox { id: i3Check; text: "i3 WM"; checked: dotfilesManager.isI3Installed() }
-                            CheckBox { id: kittyCheck; text: "Kitty"; checked: dotfilesManager.isKittyInstalled() }
-                            CheckBox { id: picomCheck; text: "Picom"; checked: dotfilesManager.isPicomInstalled() }
-                            CheckBox { id: polybarCheck; text: "Polybar"; checked: dotfilesManager.isPolybarInstalled() }
+                        Label { 
+                            text: "System Installation"
+                            font.pixelSize: 22
+                            font.weight: Font.Bold 
+                        }
+                        Label { 
+                            text: "Select components to symlink. Existing files will be handled based on the toggle below."
+                            color: Material.secondaryTextColor
+                            font.pixelSize: 13
                         }
                     }
 
+                    // Options Card (The Group)
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 150
+                        color: isDarkTheme ? Qt.rgba(1, 1, 1, 0.03) : Qt.rgba(0, 0, 0, 0.03)
+                        radius: 10
+                        border.color: isDarkTheme ? "#333" : "#ddd"
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 15
+                            
+                            Label {
+                                text: "CONFIGURATIONS"
+                                font.pixelSize: 11
+                                font.weight: Font.Bold
+                                color: Material.accent
+                                Layout.bottomMargin: 5
+                            }
+
+                            GridLayout {
+                                Layout.fillWidth: true
+                                columns: 4
+                                rowSpacing: 10
+                                columnSpacing: 10
+
+                                CheckBox { id: dunstCheck; text: "Dunst"; checked: dotfilesManager.isDunstInstalled() }
+                                CheckBox { id: fishCheck; text: "Fish"; checked: dotfilesManager.isFishInstalled() }
+                                CheckBox { id: i3Check; text: "i3 WM"; checked: dotfilesManager.isI3Installed() }
+                                CheckBox { id: kittyCheck; text: "Kitty"; checked: dotfilesManager.isKittyInstalled() }
+                                CheckBox { id: picomCheck; text: "Picom"; checked: dotfilesManager.isPicomInstalled() }
+                                CheckBox { id: polybarCheck; text: "Polybar"; checked: dotfilesManager.isPolybarInstalled() }
+                                CheckBox { id: fastfetchCheck; text: "Fastfetch"; checked: dotfilesManager.isFastfetchInstalled() }
+                            }
+                            Item { Layout.fillHeight: true }
+                        }
+                    }
+
+                    // Configuration Controls
                     RowLayout {
                         spacing: 15
                         CheckBox {
                             id: removeExistingCheck
-                            text: "Overwrite existing files"
+                            text: "Overwrite existing configs"
                             checked: dotfilesManager.removeExisting
                             onCheckedChanged: dotfilesManager.removeExisting = checked
                         }
@@ -156,53 +191,69 @@ ApplicationWindow {
                                 if (kittyCheck.checked) dotfilesManager.installKitty()
                                 if (picomCheck.checked) dotfilesManager.installPicom()
                                 if (polybarCheck.checked) dotfilesManager.installPolybar()
+                                if (fastfetchCheck.checked) dotfilesManager.installFastfetch()
                             }
                         }
                     }
 
-                    // Log Console
-                    Label {
-                        text: "Activity Logs"
-                        font.pixelSize: 12
-                        font.capitalization: Font.AllUppercase
-                        color: Material.accent
-                    }
-
-                    ScrollView {
+                    // Activity Log Section
+                    ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        clip: true
-                        TextArea {
-                            id: statusArea
-                            readOnly: true
-                            font.family: "Monospace"
-                            font.pixelSize: 12
-                            background: Rectangle {
-                                color: isDarkTheme ? "#121212" : "#f5f5f5"
-                                radius: 4
+                        spacing: 8
+
+                        Label {
+                            text: "ACTIVITY LOGS"
+                            font.pixelSize: 11
+                            font.weight: Font.Bold
+                            color: Material.accent
+                        }
+
+                        ScrollView {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            clip: true
+
+                            TextArea {
+                                id: statusArea
+                                readOnly: true
+                                font.family: "Monospace"
+                                font.pixelSize: 12
+                                background: Rectangle {
+                                    color: isDarkTheme ? "#111" : "#f5f5f5"
+                                    radius: 6
+                                    border.color: isDarkTheme ? "#222" : "#eee"
+                                }
                             }
+                        }
+
+                        Label {
+                            text: "Note: For icons to work install nerd font or you can just use mine in fonts/ dir"
+                            font.pixelSize: 11
+                            font.italic: true
+                            color: Material.secondaryTextColor
+                            Layout.topMargin: 4
                         }
                     }
 
-                    // --- NEW NOTE TEXT ---
-                    Label {
-                        text: "Note: For icons to work install nerd font or you can just use mine in fonts/ dir"
-                        font.pixelSize: 14
-                        color: Material.secondaryTextColor
-                        Layout.topMargin: -10
-                    }
-
+                    // Footer
                     RowLayout {
-                        Layout.alignment: Qt.AlignHCenter
-                        spacing: 20
+                        Layout.fillWidth: true
                         Label { text: "i3wm Dotfiles Manager • Raj Kashayp 2026"; font.pixelSize: 10; opacity: 0.5 }
-                        Button { text: "About"; flat: true; font.pixelSize: 10; opacity: 0.7; onClicked: aboutDialog.open() }
+                        Item { Layout.fillWidth: true }
+                        Button { 
+                            text: "About"
+                            flat: true
+                            font.pixelSize: 10
+                            onClicked: aboutDialog.open()
+                        }
                     }
                 }
             }
         }
     }
 
+    // About Dialog (Simplified)
     Dialog {
         id: aboutDialog
         title: "About"
@@ -212,18 +263,20 @@ ApplicationWindow {
         contentItem: ColumnLayout {
             spacing: 10
             Label { text: "i3wm Dotfiles Manager"; font.pixelSize: 16; font.weight: Font.Bold; Layout.alignment: Qt.AlignHCenter }
-            Label { text: "Version: " + dotfilesManager.getVersion(); font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
-            Label { text: "Developed by: Raj Kashayp"; font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
-            Label {
-                text: "source: https://github.com/Raj-Kashyap001/i3wm-dotfiles-v2"
-                font.pixelSize: 12; color: Material.accent; Layout.alignment: Qt.AlignHCenter
-                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally("https://github.com/Raj-Kashyap001") }
+            Label { text: "Developed by Raj Kashayp"; font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
+            Button {
+                text: "GitHub Repository"
+                flat: true
+                Layout.alignment: Qt.AlignHCenter
+                onClicked: Qt.openUrlExternally("https://github.com/Raj-Kashyap001/i3wm-dotfiles-v2")
             }
         }
     }
 
     Connections {
         target: dotfilesManager
-        function onStatusMessage(message) { statusArea.append(" > " + message) }
+        function onStatusMessage(message) {
+            statusArea.append(" > " + message)
+        }
     }
 }
