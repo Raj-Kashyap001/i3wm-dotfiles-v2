@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource>
+    <file>main.qml</file>
+    <file>icons/appicon.png</file>
+    <file>icons/close.svg</file>
+    <file>icons/close-white.svg</file>
+  </qresource>
+</RCC>

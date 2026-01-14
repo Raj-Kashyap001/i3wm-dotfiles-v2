@@ -1,0 +1,17 @@
+# Ignore generated files
+*.o
+*.moc
+moc_*
+qrc_*
+Makefile
+.ui
+
+# Ignore build artifacts
+*.pro.user
+*.qmake.stash
+
+
+# Ignore Qt Creator files
+.DS_Store
+*.autosave
+*.swp
