@@ -36,17 +36,17 @@ chmod +x polybar/scripts/*.sh
 chmod +x i3/scripts/*.{sh,py}
 ```
 
-2. Installer the fonts in `fonts` directory if not have installed.
+2. Install the fonts from `fonts` directory.
 
-3. Download the binary from [releases](https://github.com/Raj-Kashyap001/repo/releases) section.
+5. Download the binary from [releases](https://github.com/Raj-Kashyap001/repo/releases) section.
 
-4. Run the application:
+6. Run the application:
 
    ```bash
    ./Dotinst
    ```
 
-5. Select dotfile components to install and click "Install Selected"
+7. Select dotfile components to install and click "Install Selected"
 
 ## Building Installer from source
 
@@ -73,7 +73,7 @@ chmod +x i3/scripts/*.{sh,py}
 
 If the application crashes:
 
-- Copy paste configs to there corrosponding locations that's it....
+- Copy paste configs to there corresponding config locations that's it....
   (ignore below probably)
 - Ensure all required Qt libraries are installed
 - Verify that the theme icons exist in the correct location
