@@ -88,7 +88,12 @@ public:
         createSymlinks("fastfetch", "~/.config/fastfetch");
         emit statusMessage("Fastfetch installed.");
     }
- 
+    Q_INVOKABLE void installRofi() {
+        emit statusMessage("Installing Rofi...");
+        createSymlinks("rofi", "~/.config/rofi");
+        emit statusMessage("Rofi installed.");
+    }
+  
     Q_INVOKABLE void backupAll() {
         emit statusMessage("Backing up all dotfiles...");
         backupDirectory("~/.config/dunst", "dunst");
@@ -98,6 +103,7 @@ public:
         backupDirectory("~/.config/picom", "picom");
         backupDirectory("~/.config/polybar", "polybar");
         backupDirectory("~/.config/fastfetch", "fastfetch");
+        backupDirectory("~/.config/rofi", "rofi");
         emit statusMessage("Backup completed.");
     }
 
@@ -110,6 +116,7 @@ public:
         restoreDirectory("~/.config/picom", "picom");
         restoreDirectory("~/.config/polybar", "polybar");
         restoreDirectory("~/.config/fastfetch", "fastfetch");
+        restoreDirectory("~/.config/rofi", "rofi");
         emit statusMessage("Restore completed.");
     }
 

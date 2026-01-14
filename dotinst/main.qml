@@ -164,6 +164,7 @@ ApplicationWindow {
                                 CheckBox { id: kittyCheck; text: "Kitty"; checked: dotfilesManager.isKittyInstalled() }
                                 CheckBox { id: picomCheck; text: "Picom"; checked: dotfilesManager.isPicomInstalled() }
                                 CheckBox { id: polybarCheck; text: "Polybar"; checked: dotfilesManager.isPolybarInstalled() }
+                                CheckBox { id: rofiCheck; text: "Rofi"; checked: dotfilesManager.isRofiInstalled() }
                                 CheckBox { id: fastfetchCheck; text: "Fastfetch"; checked: dotfilesManager.isFastfetchInstalled() }
                             }
                             Item { Layout.fillHeight: true }
@@ -191,6 +192,7 @@ ApplicationWindow {
                                 if (kittyCheck.checked) dotfilesManager.installKitty()
                                 if (picomCheck.checked) dotfilesManager.installPicom()
                                 if (polybarCheck.checked) dotfilesManager.installPolybar()
+                                if (rofiCheck.checked) dotfilesManager.installRofi()
                                 if (fastfetchCheck.checked) dotfilesManager.installFastfetch()
                             }
                         }

@@ -2,6 +2,10 @@
 
 My Arch Rice with i3wm and polybar
 
+## Preview
+
+<img src="./screenshot.png">
+
 ## Features
 
 - **Dotfiles Management**: Install, backup, and restore various dotfile configurations
@@ -23,7 +27,28 @@ My Arch Rice with i3wm and polybar
 - Qt Quick Controls Material Style
 - Standard C++ build tools
 
-## Building
+## Usage
+
+1. Give persmission to execute on script for i3 and polybar in
+
+```bash
+chmod +x polybar/scripts/*.sh
+chmod +x i3/scripts/*.{sh,py}
+```
+
+2. Installer the fonts in `fonts` directory if not have installed.
+
+3. Download the binary from [releases](https://github.com/Raj-Kashyap001/repo/releases) section.
+
+4. Run the application:
+
+   ```bash
+   ./Dotinst
+   ```
+
+5. Select dotfile components to install and click "Install Selected"
+
+## Building Installer from source
 
 1. Install dependencies:
 
@@ -44,34 +69,12 @@ My Arch Rice with i3wm and polybar
    ./build_installer.sh
    ```
 
-## Usage
-
-0. Give persmission to execute on script for i3 and polybar in
-
-```bash
-chmod +x polybar/scripts/*.sh
-chmod +x i3/scripts/*.{sh,py}
-
-```
-
-0.5. Installer the fonts in `fonts` directory if not have installed.
-
-1. Run the application:
-
-   ```bash
-   ./Dotinst
-   ```
-
-2. Use the theme toggle button (moon/sun icon) in the title bar to switch between dark and light themes
-
-3. Select dotfile components to install and click "Install Selected"
-
 ## Troubleshooting
 
 If the application crashes:
 
 - Copy paste configs to there corrosponding locations that's it....
-  (ignore below if probably)
+  (ignore below probably)
 - Ensure all required Qt libraries are installed
 - Verify that the theme icons exist in the correct location
 - Check that all resource files are properly included in the Qt resource system
