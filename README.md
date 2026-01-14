@@ -20,7 +20,7 @@ My Arch Rice with i3wm and polybar
 - playerctl
 - picom
 
-`Only if need GUI dotfiles installer`
+`Only if you need GUI dotfiles installer`
 
 - Qt 6.2 or higher
 - Qt Quick Controls 2
