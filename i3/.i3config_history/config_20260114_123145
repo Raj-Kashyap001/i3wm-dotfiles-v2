@@ -1,0 +1,319 @@
+# i3 config file (v4)
+# Improved configuration with vim-like keybindings
+
+# ============================================================================
+# BASIC SETTINGS
+# ============================================================================
+
+set $mod Mod4
+set $alt Mod1
+
+# Font
+font pango:JetBrains Mono Nerd Font 9
+
+# Window borders
+for_window [class="^.*"] border pixel 2
+
+# Don't fullscreen first window on workspace
+for_window [workspace=".*"] fullscreen disable
+
+# Gaps
+gaps inner 4 px
+gaps outer 2 px
+smart_gaps on
+smart_borders on
+
+# ============================================================================
+# AUTOSTART
+# ============================================================================
+
+
+# ============================================================================
+# COLORS (Nord Theme)
+# ============================================================================
+
+set $bg       #2e3440
+set $fg       #d8dee9
+set $border   #81a1c1
+set $inactive #4c566a
+set $urgent   #bf616a
+
+# class                 border    backgr.   text  indicator child_border
+client.focused          $border   $border   $fg   $border   $border
+client.focused_inactive $inactive $inactive $fg   $inactive $inactive
+client.unfocused        $inactive $bg       $fg   $inactive $inactive
+client.urgent           $urgent   $urgent   $fg   $urgent   $urgent
+client.placeholder      $bg       $bg       $fg   $bg       $bg
+client.background       $bg
+
+# ============================================================================
+# VIM-LIKE KEYBINDINGS
+# ============================================================================
+
+# Terminal
+bindsym $mod+Return exec kitty
+bindsym Control+$alt+t exec kitty
+
+# Kill window
+bindsym $mod+Shift+q kill
+bindsym $mod+q kill
+
+# Application launcher
+bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+Shift+d exec --no-startup-id rofi -show run
+bindsym $alt+space exec --no-startup-id rofi -show drun
+
+# File manager
+bindsym $mod+Shift+Return exec nautilus
+
+# ============================================================================
+# FOCUS MOVEMENT (VIM KEYS)
+# ============================================================================
+
+# Change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# Arrow keys as alternative
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move windows
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Arrow keys as alternative
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# ============================================================================
+# WINDOW MANAGEMENT
+# ============================================================================
+
+# Split horizontal/vertical
+bindsym $mod+minus split h
+bindsym $mod+bar split v
+bindsym $mod+backslash split v
+
+# Fullscreen
+bindsym $mod+f fullscreen toggle
+
+# Container layouts
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Toggle tiling/floating
+bindsym $mod+space floating toggle
+
+# Focus tiling/floating
+bindsym $mod+Shift+space focus mode_toggle
+
+# Focus parent/child
+bindsym $mod+a focus parent
+bindsym $mod+Shift+a focus child
+
+# Floating modifier
+floating_modifier $mod
+
+# Scratchpad
+bindsym $mod+Shift+s move scratchpad
+bindsym $mod+Shift+t scratchpad show
+
+# Wallpaper Chnage
+bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/wallpaper.sh ~/Pictures/wallpapers/$(ls ~/Pictures/wallpapers | shuf -n 1)
+
+# ============================================================================
+# WORKSPACES
+# ============================================================================
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# Move to workspace and follow
+bindsym $mod+Shift+1 move container to workspace number $ws1; workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2; workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3; workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4; workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5; workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6; workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7; workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8; workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9; workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10; workspace number $ws10
+
+# Cycle workspaces
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+
+# Navigate back and forth
+bindsym $mod+grave workspace back_and_forth
+bindsym $mod+Shift+grave move container to workspace back_and_forth; workspace back_and_forth
+
+# ============================================================================
+# RESIZE MODE (VIM KEYS)
+# ============================================================================
+
+mode "resize" {
+    # Vim keys
+    bindsym h resize shrink width 10 px or 10 ppt
+    bindsym j resize grow height 10 px or 10 ppt
+    bindsym k resize shrink height 10 px or 10 ppt
+    bindsym l resize grow width 10 px or 10 ppt
+
+    # Arrow keys
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+
+    # Fine control with Shift
+    bindsym Shift+h resize shrink width 1 px or 1 ppt
+    bindsym Shift+j resize grow height 1 px or 1 ppt
+    bindsym Shift+k resize shrink height 1 px or 1 ppt
+    bindsym Shift+l resize grow width 1 px or 1 ppt
+
+    # Exit resize mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# ============================================================================
+# GAPS MODE
+# ============================================================================
+
+mode "gaps" {
+    bindsym i gaps inner all plus 5
+    bindsym Shift+i gaps inner all minus 5
+    bindsym o gaps outer all plus 5
+    bindsym Shift+o gaps outer all minus 5
+    bindsym 0 gaps inner all set 0; gaps outer all set 0
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+g mode "gaps"
+
+# ============================================================================
+# MEDIA KEYS
+# ============================================================================
+
+set $refresh_i3status killall -SIGUSR1 i3status
+
+# Volume
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Brightness (if you have brightnessctl)
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+# ============================================================================
+# SCREENSHOTS WITH NOTIFICATIONS
+# ============================================================================
+
+# Full screen
+bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%M-%S').png" && notify-send "Screenshot saved" "Full screen captured"
+
+# Active window
+bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%M-%S').png" && notify-send "Screenshot saved" "Window captured"
+
+# Select area
+bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%M-%S').png" && notify-send "Screenshot saved" "Selection captured"
+
+# Clipboard screenshots
+bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png && notify-send "Screenshot copied" "Full screen to clipboard"
+
+bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png && notify-send "Screenshot copied" "Window to clipboard"
+
+bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png && notify-send "Screenshot copied" "Selection to clipboard"
+
+# ============================================================================
+# UTILITY BINDINGS
+# ============================================================================
+
+# Clipboard manager
+bindsym $mod+v exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard
+
+# Emoji picker
+bindsym $mod+period exec --no-startup-id rofi -modi emoji -show emoji
+
+# Calculator
+bindsym $mod+equal exec --no-startup-id gnome-calculator --class="floating"
+bindcode 148 exec --no-startup-id gnome-calculator --class="floating"
+
+# Power menu
+bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu.sh
+
+# ============================================================================
+# WINDOW RULES
+# ============================================================================
+
+# Floating windows
+for_window [class="floating"] floating enable
+for_window [class="Steam.*"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Gnome-calculator"] floating enable
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+
+# ============================================================================
+# SYSTEM CONTROLS
+# ============================================================================
+
+# Reload config
+bindsym $mod+Mod1+c reload
+
+# Restart i3
+bindsym $mod+Shift+r restart
+
+# Lock screen
+bindsym $mod+x exec --no-startup-id i3lock -c 000000
+
+# Deleted: bindsym Shift+Mod4+w i3wallch ~/Pictures/wallpapers/$(ls ~/Pictures/wallpapers | shuf -n 1)
+# Deleted: exec --no-startup-id dbus-update-activation-environment --systemd QT_QPA_PLATFORM=xcb
+# Deleted: bindsym Shift+Mod4+c exec --no-startup-id bash -c 'color=$(xcolor); echo "$color" | xclip -selection clipboard; notify-send "Color Picked" "Hex code $color has been copied to clipboard."'
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id nm-applet
+exec_always --no-startup-id picom -b
+exec --no-startup-id greenclip daemon
+exec --no-startup-id dunst
+exec --no-startup-id waypaper --restore
+exec --no-startup-id dbus-update-activation-environment --systemd QT_QPA_PLATFORM=xcb
+exec_always --no-startup-id xrandr --output HDMI-1 --mode 1920x1080 --rate 74.97
+exec_always --no-startup-id ~/.config/polybar/launch.sh
