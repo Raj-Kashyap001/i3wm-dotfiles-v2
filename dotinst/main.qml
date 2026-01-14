@@ -215,7 +215,7 @@ ApplicationWindow {
             Label { text: "Version: " + dotfilesManager.getVersion(); font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
             Label { text: "Developed by: Raj Kashayp"; font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
             Label {
-                text: "source: https://github.com/Raj-Kashyap001/i3wm-dots"
+                text: "source: https://github.com/Raj-Kashyap001/i3wm-dotfiles-v2"
                 font.pixelSize: 12; color: Material.accent; Layout.alignment: Qt.AlignHCenter
                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally("https://github.com/Raj-Kashyap001") }
             }
