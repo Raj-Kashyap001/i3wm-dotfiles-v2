@@ -20,7 +20,7 @@ My Arch Rice with i3wm and polybar
 - playerctl
 - picom
 
-`Only if you need GUI dotfiles installer`
+`Below Only if you need GUI dotfiles installer`
 
 - Qt 6.2 or higher
 - Qt Quick Controls 2
@@ -38,15 +38,15 @@ chmod +x i3/scripts/*.{sh,py}
 
 2. Install the fonts from `fonts` directory.
 
-5. Download the binary from [releases](https://github.com/Raj-Kashyap001/repo/releases) section.
+3. Download the binary from [releases](https://github.com/Raj-Kashyap001/repo/releases) section.
 
-6. Run the application:
+4. Run the application:
 
    ```bash
    ./Dotinst
    ```
 
-7. Select dotfile components to install and click "Install Selected"
+5. Select dotfile components to install and click "Install Selected"
 
 ## Building Installer from source
 
