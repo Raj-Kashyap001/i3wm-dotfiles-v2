@@ -25,7 +25,7 @@ ApplicationWindow {
             anchors.fill: parent
             spacing: 0
 
-            // --- FIXED CUSTOM TITLE BAR ---
+            // --- CUSTOM TITLE BAR ---
             Rectangle {
                 id: titleBar
                 Layout.fillWidth: true
@@ -132,7 +132,7 @@ ApplicationWindow {
                         }
                     }
 
-                    // Options Card (The Group)
+                    // Options Card
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 150
@@ -158,14 +158,46 @@ ApplicationWindow {
                                 rowSpacing: 10
                                 columnSpacing: 10
 
-                                CheckBox { id: dunstCheck; text: "Dunst"; checked: dotfilesManager.isDunstInstalled() }
-                                CheckBox { id: fishCheck; text: "Fish"; checked: dotfilesManager.isFishInstalled() }
-                                CheckBox { id: i3Check; text: "i3 WM"; checked: dotfilesManager.isI3Installed() }
-                                CheckBox { id: kittyCheck; text: "Kitty"; checked: dotfilesManager.isKittyInstalled() }
-                                CheckBox { id: picomCheck; text: "Picom"; checked: dotfilesManager.isPicomInstalled() }
-                                CheckBox { id: polybarCheck; text: "Polybar"; checked: dotfilesManager.isPolybarInstalled() }
-                                CheckBox { id: rofiCheck; text: "Rofi"; checked: dotfilesManager.isRofiInstalled() }
-                                CheckBox { id: fastfetchCheck; text: "Fastfetch"; checked: dotfilesManager.isFastfetchInstalled() }
+                                CheckBox { 
+                                    id: dunstCheck
+                                    text: "Dunst"
+                                    checked: dotfilesManager.isDunstInstalled()
+                                }
+                                CheckBox { 
+                                    id: fishCheck
+                                    text: "Fish"
+                                    checked: dotfilesManager.isFishInstalled()
+                                }
+                                CheckBox { 
+                                    id: i3Check
+                                    text: "i3 WM"
+                                    checked: dotfilesManager.isI3Installed()
+                                }
+                                CheckBox { 
+                                    id: kittyCheck
+                                    text: "Kitty"
+                                    checked: dotfilesManager.isKittyInstalled()
+                                }
+                                CheckBox { 
+                                    id: picomCheck
+                                    text: "Picom"
+                                    checked: dotfilesManager.isPicomInstalled()
+                                }
+                                CheckBox { 
+                                    id: polybarCheck
+                                    text: "Polybar"
+                                    checked: dotfilesManager.isPolybarInstalled()
+                                }
+                                CheckBox { 
+                                    id: rofiCheck
+                                    text: "Rofi"
+                                    checked: dotfilesManager.isRofiInstalled()
+                                }
+                                CheckBox { 
+                                    id: fastfetchCheck
+                                    text: "Fastfetch"
+                                    checked: dotfilesManager.isFastfetchInstalled()
+                                }
                             }
                             Item { Layout.fillHeight: true }
                         }
@@ -181,11 +213,18 @@ ApplicationWindow {
                             onCheckedChanged: dotfilesManager.removeExisting = checked
                         }
                         Item { Layout.fillWidth: true }
-                        Button { text: "Backup All"; onClicked: dotfilesManager.backupAll() }
+                        Button { 
+                            text: "Backup All"
+                            onClicked: dotfilesManager.backupAll()
+                        }
                         Button {
                             text: "Install Selected"
                             highlighted: true
+                            enabled: dunstCheck.checked || fishCheck.checked || i3Check.checked || 
+                                     kittyCheck.checked || picomCheck.checked || polybarCheck.checked || 
+                                     rofiCheck.checked || fastfetchCheck.checked
                             onClicked: {
+                                statusArea.text = ""
                                 if (dunstCheck.checked) dotfilesManager.installDunst()
                                 if (fishCheck.checked) dotfilesManager.installFish()
                                 if (i3Check.checked) dotfilesManager.installI3()
@@ -194,6 +233,16 @@ ApplicationWindow {
                                 if (polybarCheck.checked) dotfilesManager.installPolybar()
                                 if (rofiCheck.checked) dotfilesManager.installRofi()
                                 if (fastfetchCheck.checked) dotfilesManager.installFastfetch()
+                                
+                                // Refresh checkboxes after installation
+                                dunstCheck.checked = dotfilesManager.isDunstInstalled()
+                                fishCheck.checked = dotfilesManager.isFishInstalled()
+                                i3Check.checked = dotfilesManager.isI3Installed()
+                                kittyCheck.checked = dotfilesManager.isKittyInstalled()
+                                picomCheck.checked = dotfilesManager.isPicomInstalled()
+                                polybarCheck.checked = dotfilesManager.isPolybarInstalled()
+                                rofiCheck.checked = dotfilesManager.isRofiInstalled()
+                                fastfetchCheck.checked = dotfilesManager.isFastfetchInstalled()
                             }
                         }
                     }
@@ -219,6 +268,7 @@ ApplicationWindow {
                             TextArea {
                                 id: statusArea
                                 readOnly: true
+                                wrapMode: TextArea.Wrap
                                 font.family: "Monospace"
                                 font.pixelSize: 12
                                 background: Rectangle {
@@ -241,7 +291,11 @@ ApplicationWindow {
                     // Footer
                     RowLayout {
                         Layout.fillWidth: true
-                        Label { text: "i3wm Dotfiles Manager • Raj Kashayp 2026"; font.pixelSize: 10; opacity: 0.5 }
+                        Label { 
+                            text: "i3wm Dotfiles Manager • Raj Kashayp 2026"
+                            font.pixelSize: 10
+                            opacity: 0.5 
+                        }
                         Item { Layout.fillWidth: true }
                         Button { 
                             text: "About"
@@ -255,7 +309,7 @@ ApplicationWindow {
         }
     }
 
-    // About Dialog (Simplified)
+    // About Dialog
     Dialog {
         id: aboutDialog
         title: "About"
@@ -264,8 +318,17 @@ ApplicationWindow {
         anchors.centerIn: parent
         contentItem: ColumnLayout {
             spacing: 10
-            Label { text: "i3wm Dotfiles Manager"; font.pixelSize: 16; font.weight: Font.Bold; Layout.alignment: Qt.AlignHCenter }
-            Label { text: "Developed by Raj Kashayp"; font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
+            Label { 
+                text: "i3wm Dotfiles Manager"
+                font.pixelSize: 16
+                font.weight: Font.Bold
+                Layout.alignment: Qt.AlignHCenter 
+            }
+            Label { 
+                text: "Developed by Raj Kashayp"
+                font.pixelSize: 12
+                Layout.alignment: Qt.AlignHCenter 
+            }
             Button {
                 text: "GitHub Repository"
                 flat: true
@@ -278,7 +341,7 @@ ApplicationWindow {
     Connections {
         target: dotfilesManager
         function onStatusMessage(message) {
-            statusArea.append(" > " + message)
+            statusArea.append(message)
         }
     }
 }

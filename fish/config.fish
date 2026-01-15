@@ -359,7 +359,7 @@ alias q exit
 
 
 set -gx QT_QPA_PLATFORMTHEME "qt5ct"
-set -gx QT_STYLE_OVERRIDE "qt5ct"
+set -gx QT_STYLE_OVERRIDE "qt5ct-style"
 
 function fish_prompt
     set -l last_status $status

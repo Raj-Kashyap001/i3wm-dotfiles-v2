@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QStandardPaths>
 #include <QDebug>
 #include <QDateTime>
@@ -13,7 +14,11 @@ class DotfilesManager : public QObject {
     Q_OBJECT
 
 public:
-    explicit DotfilesManager(QObject *parent = nullptr) : QObject(parent) {}
+    explicit DotfilesManager(QObject *parent = nullptr) : QObject(parent) {
+        // Get the absolute path to the dotfiles directory
+        m_dotfilesPath = QDir::currentPath();
+        qDebug() << "Dotfiles path:" << m_dotfilesPath;
+    }
 
     Q_PROPERTY(bool removeExisting READ removeExisting WRITE setRemoveExisting NOTIFY removeExistingChanged)
 
@@ -48,76 +53,108 @@ public:
         return checkIfInstalled("~/.config/fastfetch");
     }
 
+    Q_INVOKABLE bool isRofiInstalled() {
+        return checkIfInstalled("~/.config/rofi");
+    }
+
     Q_INVOKABLE void installDunst() {
         emit statusMessage("Installing Dunst...");
-        createSymlinks("dunst", "~/.config/dunst");
-        emit statusMessage("Dunst installed.");
+        if (createSymlink("dunst", "~/.config/dunst")) {
+            emit statusMessage("✓ Dunst installed successfully.");
+        } else {
+            emit statusMessage("✗ Dunst installation failed.");
+        }
     }
 
     Q_INVOKABLE void installFish() {
         emit statusMessage("Installing Fish...");
-        createSymlinks("fish", "~/.config/fish");
-        emit statusMessage("Fish installed.");
+        if (createSymlink("fish", "~/.config/fish")) {
+            emit statusMessage("✓ Fish installed successfully.");
+        } else {
+            emit statusMessage("✗ Fish installation failed.");
+        }
     }
 
     Q_INVOKABLE void installI3() {
         emit statusMessage("Installing i3...");
-        createSymlinks("i3", "~/.config/i3");
-        emit statusMessage("i3 installed.");
+        if (createSymlink("i3", "~/.config/i3")) {
+            emit statusMessage("✓ i3 installed successfully.");
+        } else {
+            emit statusMessage("✗ i3 installation failed.");
+        }
     }
 
     Q_INVOKABLE void installKitty() {
         emit statusMessage("Installing Kitty...");
-        createSymlinks("kitty", "~/.config/kitty");
-        emit statusMessage("Kitty installed.");
+        if (createSymlink("kitty", "~/.config/kitty")) {
+            emit statusMessage("✓ Kitty installed successfully.");
+        } else {
+            emit statusMessage("✗ Kitty installation failed.");
+        }
     }
 
     Q_INVOKABLE void installPicom() {
         emit statusMessage("Installing Picom...");
-        createSymlinks("picom", "~/.config/picom");
-        emit statusMessage("Picom installed.");
+        if (createSymlink("picom", "~/.config/picom")) {
+            emit statusMessage("✓ Picom installed successfully.");
+        } else {
+            emit statusMessage("✗ Picom installation failed.");
+        }
     }
 
     Q_INVOKABLE void installPolybar() {
         emit statusMessage("Installing Polybar...");
-        createSymlinks("polybar", "~/.config/polybar");
-        emit statusMessage("Polybar installed.");
+        if (createSymlink("polybar", "~/.config/polybar")) {
+            emit statusMessage("✓ Polybar installed successfully.");
+        } else {
+            emit statusMessage("✗ Polybar installation failed.");
+        }
     }
+
     Q_INVOKABLE void installFastfetch() {
         emit statusMessage("Installing Fastfetch...");
-        createSymlinks("fastfetch", "~/.config/fastfetch");
-        emit statusMessage("Fastfetch installed.");
+        if (createSymlink("fastfetch", "~/.config/fastfetch")) {
+            emit statusMessage("✓ Fastfetch installed successfully.");
+        } else {
+            emit statusMessage("✗ Fastfetch installation failed.");
+        }
     }
+
     Q_INVOKABLE void installRofi() {
         emit statusMessage("Installing Rofi...");
-        createSymlinks("rofi", "~/.config/rofi");
-        emit statusMessage("Rofi installed.");
+        if (createSymlink("rofi", "~/.config/rofi")) {
+            emit statusMessage("✓ Rofi installed successfully.");
+        } else {
+            emit statusMessage("✗ Rofi installation failed.");
+        }
     }
   
     Q_INVOKABLE void backupAll() {
         emit statusMessage("Backing up all dotfiles...");
-        backupDirectory("~/.config/dunst", "dunst");
-        backupDirectory("~/.config/fish", "fish");
-        backupDirectory("~/.config/i3", "i3");
-        backupDirectory("~/.config/kitty", "kitty");
-        backupDirectory("~/.config/picom", "picom");
-        backupDirectory("~/.config/polybar", "polybar");
-        backupDirectory("~/.config/fastfetch", "fastfetch");
-        backupDirectory("~/.config/rofi", "rofi");
-        emit statusMessage("Backup completed.");
+        int count = 0;
+        count += backupDirectory("~/.config/dunst", "dunst") ? 1 : 0;
+        count += backupDirectory("~/.config/fish", "fish") ? 1 : 0;
+        count += backupDirectory("~/.config/i3", "i3") ? 1 : 0;
+        count += backupDirectory("~/.config/kitty", "kitty") ? 1 : 0;
+        count += backupDirectory("~/.config/picom", "picom") ? 1 : 0;
+        count += backupDirectory("~/.config/polybar", "polybar") ? 1 : 0;
+        count += backupDirectory("~/.config/fastfetch", "fastfetch") ? 1 : 0;
+        count += backupDirectory("~/.config/rofi", "rofi") ? 1 : 0;
+        emit statusMessage(QString("✓ Backup completed. %1 config(s) backed up.").arg(count));
     }
 
     Q_INVOKABLE void restoreAll() {
         emit statusMessage("Restoring all dotfiles...");
-        restoreDirectory("~/.config/dunst", "dunst");
-        restoreDirectory("~/.config/fish", "fish");
-        restoreDirectory("~/.config/i3", "i3");
-        restoreDirectory("~/.config/kitty", "kitty");
-        restoreDirectory("~/.config/picom", "picom");
-        restoreDirectory("~/.config/polybar", "polybar");
-        restoreDirectory("~/.config/fastfetch", "fastfetch");
-        restoreDirectory("~/.config/rofi", "rofi");
-        emit statusMessage("Restore completed.");
+        int count = 0;
+        count += restoreDirectory("~/.config/dunst", "dunst") ? 1 : 0;
+        count += restoreDirectory("~/.config/fish", "fish") ? 1 : 0;
+        count += restoreDirectory("~/.config/i3", "i3") ? 1 : 0;
+        count += restoreDirectory("~/.config/kitty", "kitty") ? 1 : 0;
+        count += restoreDirectory("~/.config/picom", "picom") ? 1 : 0;
+        count += restoreDirectory("~/.config/polybar", "polybar") ? 1 : 0;
+        count += restoreDirectory("~/.config/fastfetch", "fastfetch") ? 1 : 0;
+        count += restoreDirectory("~/.config/rofi", "rofi") ? 1 : 0;
+        emit statusMessage(QString("✓ Restore completed. %1 config(s) restored.").arg(count));
     }
 
     Q_INVOKABLE QString getVersion() {
@@ -126,7 +163,11 @@ public:
         process.waitForFinished();
         QString version = process.readAllStandardOutput().trimmed();
         if (version.isEmpty()) {
-            return "v1.0.0"; // Default
+            return "1.0.1";
+        }
+        // Remove 'v' prefix if present
+        if (version.startsWith('v')) {
+            version = version.mid(1);
         }
         return version;
     }
@@ -137,98 +178,196 @@ signals:
 
 private:
     bool m_removeExisting = false;
+    QString m_dotfilesPath;
+
+    QString expandPath(const QString &path) {
+        QString expanded = path;
+        expanded.replace("~", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+        return expanded;
+    }
 
     bool checkIfInstalled(const QString &destDir) {
-        QString expandedDest = destDir;
-        expandedDest.replace("~", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-        QDir dest(expandedDest);
-        if (!dest.exists()) return false;
-        QStringList files = dest.entryList(QDir::Files | QDir::NoDotAndDotDot);
-        for (const QString &file : files) {
-            QFile f(dest.absoluteFilePath(file));
-            if (f.size() > 0) return true; // Ignore empty files
+        QString expandedDest = expandPath(destDir);
+        QFileInfo destInfo(expandedDest);
+        
+        // Check if it exists and is a symlink
+        if (destInfo.exists() && destInfo.isSymLink()) {
+            return true;
         }
+        
+        // Or if it's a directory with contents
+        if (destInfo.isDir()) {
+            QDir dest(expandedDest);
+            QStringList entries = dest.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+            return !entries.isEmpty();
+        }
+        
         return false;
     }
 
-    void createSymlinks(const QString &sourceDir, const QString &destDir) {
-        QDir source(sourceDir);
-        QString expandedDest = destDir;
-        expandedDest.replace("~", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-
-        QDir dest(expandedDest);
-        if (!dest.exists()) {
-            dest.mkpath(".");
+    bool removeRecursively(const QString &dirPath) {
+        QDir dir(dirPath);
+        if (!dir.exists()) {
+            return true;
         }
 
-        QStringList files = source.entryList(QDir::Files);
-        for (const QString &file : files) {
-            QString srcFile = source.absoluteFilePath(file);
-            QString dstFile = dest.absoluteFilePath(file);
-            if (QFile::exists(dstFile) || QFile::symLinkTarget(dstFile) == srcFile) {
-                if (m_removeExisting) {
-                    QFile::remove(dstFile);
+        bool success = true;
+        QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden);
+        
+        for (const QFileInfo &info : entries) {
+            if (info.isDir() && !info.isSymLink()) {
+                success &= removeRecursively(info.absoluteFilePath());
+            } else {
+                success &= QFile::remove(info.absoluteFilePath());
+            }
+        }
+        
+        success &= dir.rmdir(dirPath);
+        return success;
+    }
+
+    bool createSymlink(const QString &sourceDir, const QString &destDir) {
+        // Get absolute source path
+        QDir sourceQDir(m_dotfilesPath + "/" + sourceDir);
+        if (!sourceQDir.exists()) {
+            emit statusMessage(QString("✗ Source directory not found: %1").arg(sourceQDir.absolutePath()));
+            return false;
+        }
+
+        QString srcAbsolutePath = sourceQDir.absolutePath();
+        QString expandedDest = expandPath(destDir);
+
+        // Check if destination exists
+        QFileInfo destInfo(expandedDest);
+        
+        if (destInfo.exists() || destInfo.isSymLink()) {
+            // If it's already a symlink pointing to the correct location, we're done
+            if (destInfo.isSymLink() && destInfo.symLinkTarget() == srcAbsolutePath) {
+                emit statusMessage(QString("  → %1 already linked correctly").arg(sourceDir));
+                return true;
+            }
+
+            if (m_removeExisting) {
+                emit statusMessage(QString("  ⚠ Removing existing: %1").arg(expandedDest));
+                
+                // Remove existing directory or symlink
+                if (destInfo.isSymLink()) {
+                    if (!QFile::remove(expandedDest)) {
+                        emit statusMessage(QString("✗ Failed to remove existing symlink: %1").arg(expandedDest));
+                        return false;
+                    }
+                } else if (destInfo.isDir()) {
+                    if (!removeRecursively(expandedDest)) {
+                        emit statusMessage(QString("✗ Failed to remove existing directory: %1").arg(expandedDest));
+                        return false;
+                    }
                 } else {
-                    continue; // Skip if exists
+                    if (!QFile::remove(expandedDest)) {
+                        emit statusMessage(QString("✗ Failed to remove existing file: %1").arg(expandedDest));
+                        return false;
+                    }
+                }
+            } else {
+                emit statusMessage(QString("  ⊗ Skipped (exists): %1").arg(sourceDir));
+                emit statusMessage(QString("    Enable 'Overwrite existing configs' to replace"));
+                return false;
+            }
+        }
+
+        // Ensure parent directory exists
+        QDir parentDir = QFileInfo(expandedDest).dir();
+        if (!parentDir.exists()) {
+            if (!parentDir.mkpath(".")) {
+                emit statusMessage(QString("✗ Failed to create parent directory: %1").arg(parentDir.absolutePath()));
+                return false;
+            }
+        }
+
+        // Create the symlink
+        if (QFile::link(srcAbsolutePath, expandedDest)) {
+            emit statusMessage(QString("  ✓ Created symlink: %1 → %2").arg(expandedDest).arg(srcAbsolutePath));
+            return true;
+        } else {
+            emit statusMessage(QString("✗ Failed to create symlink for: %1").arg(sourceDir));
+            return false;
+        }
+    }
+
+    bool backupDirectory(const QString &destDir, const QString &name) {
+        QString expandedDest = expandPath(destDir);
+        QFileInfo destInfo(expandedDest);
+        
+        // Don't backup if it doesn't exist or is already a symlink
+        if (!destInfo.exists() || destInfo.isSymLink()) {
+            return false;
+        }
+
+        QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss");
+        QString backupPath = expandPath("~/.dotfiles_backup/") + name + "_" + timestamp;
+        
+        QDir backupDir;
+        if (!backupDir.mkpath(backupPath)) {
+            emit statusMessage(QString("✗ Failed to create backup directory for %1").arg(name));
+            return false;
+        }
+
+        // Copy the entire directory recursively
+        if (!copyRecursively(expandedDest, backupPath)) {
+            emit statusMessage(QString("✗ Failed to backup %1").arg(name));
+            return false;
+        }
+
+        emit statusMessage(QString("  ✓ Backed up %1 to %2").arg(name).arg(backupPath));
+        return true;
+    }
+
+    bool copyRecursively(const QString &srcPath, const QString &dstPath) {
+        QFileInfo srcInfo(srcPath);
+        
+        if (srcInfo.isDir()) {
+            QDir dstDir(dstPath);
+            if (!dstDir.exists() && !dstDir.mkpath(".")) {
+                return false;
+            }
+
+            QDir srcDir(srcPath);
+            QFileInfoList entries = srcDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden);
+            
+            for (const QFileInfo &info : entries) {
+                QString srcItemPath = info.absoluteFilePath();
+                QString dstItemPath = dstPath + "/" + info.fileName();
+                
+                if (info.isSymLink()) {
+                    // For symlinks, copy the target content
+                    QString target = info.symLinkTarget();
+                    if (!QFile::copy(target, dstItemPath)) {
+                        return false;
+                    }
+                } else if (info.isDir()) {
+                    if (!copyRecursively(srcItemPath, dstItemPath)) {
+                        return false;
+                    }
+                } else {
+                    if (!QFile::copy(srcItemPath, dstItemPath)) {
+                        return false;
+                    }
                 }
             }
-            if (!QFile::link(srcFile, dstFile)) {
-                qDebug() << "Failed to create symlink" << srcFile << "to" << dstFile;
-            } else {
-                qDebug() << "Created symlink" << srcFile << "to" << dstFile;
-            }
+            return true;
+        } else {
+            return QFile::copy(srcPath, dstPath);
         }
     }
 
-    void copyDirectory(const QString &sourceDir, const QString &destDir) {
-        QDir source(sourceDir);
-        QString expandedDest = destDir;
-        expandedDest.replace("~", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-
-        QDir dest(expandedDest);
-        if (!dest.exists()) {
-            dest.mkpath(".");
-        }
-
-        QStringList files = source.entryList(QDir::Files);
-        for (const QString &file : files) {
-            QString srcFile = source.absoluteFilePath(file);
-            QString dstFile = dest.absoluteFilePath(file);
-            if (QFile::exists(dstFile)) {
-                QFile::remove(dstFile); // Overwrite if exists
-            }
-            if (!QFile::copy(srcFile, dstFile)) {
-                qDebug() << "Failed to copy" << srcFile << "to" << dstFile;
-            } else {
-                qDebug() << "Copied" << srcFile << "to" << dstFile;
-            }
-        }
-    }
-
-    void backupDirectory(const QString &destDir, const QString &name) {
-        QString expandedDest = destDir;
-        expandedDest.replace("~", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-        QDir dest(expandedDest);
-        if (!dest.exists()) return;
-
-        QString backupDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.dotfiles_backup/" + name + "_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss");
-        QDir backup(backupDir);
-        backup.mkpath(".");
-
-        QStringList files = dest.entryList(QDir::Files);
-        for (const QString &file : files) {
-            QString srcFile = dest.absoluteFilePath(file);
-            QString dstFile = backup.absoluteFilePath(file);
-            QFile::copy(srcFile, dstFile);
-        }
-        qDebug() << "Backed up" << name << "to" << backupDir;
-    }
-
-    void restoreDirectory(const QString &destDir, const QString &name) {
-        QString backupBase = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.dotfiles_backup";
+    bool restoreDirectory(const QString &destDir, const QString &name) {
+        QString backupBase = expandPath("~/.dotfiles_backup");
         QDir backupDir(backupBase);
-        if (!backupDir.exists()) return;
+        
+        if (!backupDir.exists()) {
+            return false;
+        }
 
+        // Find the latest backup for this config
         QStringList subdirs = backupDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         QString latestBackup;
         for (const QString &subdir : subdirs) {
@@ -238,22 +377,35 @@ private:
                 }
             }
         }
-        if (latestBackup.isEmpty()) return;
+
+        if (latestBackup.isEmpty()) {
+            emit statusMessage(QString("  ⊗ No backup found for %1").arg(name));
+            return false;
+        }
 
         QString fullBackupPath = backupBase + "/" + latestBackup;
-        QDir backup(fullBackupPath);
-        QString expandedDest = destDir;
-        expandedDest.replace("~", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-        QDir dest(expandedDest);
-        if (!dest.exists()) dest.mkpath(".");
-
-        QStringList files = backup.entryList(QDir::Files);
-        for (const QString &file : files) {
-            QString srcFile = backup.absoluteFilePath(file);
-            QString dstFile = dest.absoluteFilePath(file);
-            QFile::copy(srcFile, dstFile);
+        QString expandedDest = expandPath(destDir);
+        
+        // Remove existing destination
+        QFileInfo destInfo(expandedDest);
+        if (destInfo.exists()) {
+            if (destInfo.isSymLink()) {
+                QFile::remove(expandedDest);
+            } else if (destInfo.isDir()) {
+                removeRecursively(expandedDest);
+            } else {
+                QFile::remove(expandedDest);
+            }
         }
-        qDebug() << "Restored" << name << "from" << fullBackupPath;
+
+        // Copy backup to destination
+        if (!copyRecursively(fullBackupPath, expandedDest)) {
+            emit statusMessage(QString("✗ Failed to restore %1").arg(name));
+            return false;
+        }
+
+        emit statusMessage(QString("  ✓ Restored %1 from %2").arg(name).arg(latestBackup));
+        return true;
     }
 };
 

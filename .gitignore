@@ -11,6 +11,9 @@ Makefile
 *.qmake.stash
 
 
+# Binary
+Dotinst
+
 # Ignore Qt Creator files
 .DS_Store
 *.autosave
