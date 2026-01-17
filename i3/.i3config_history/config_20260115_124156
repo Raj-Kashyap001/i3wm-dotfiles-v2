@@ -315,11 +315,6 @@ for_window [class="^pavucontrol$"] move position 1409 px 632 px
 for_window [class="^gnome-calculator$"] floating enable
 for_window [class="^gnome-calculator$"] move position center
 bindsym XF86Calculator exec --no-startup-id gnome-calculator
-
-for_window [class="Google-chrome"] border none
-
-for_window [class="^org.gnome.Nautilus$"] floating enable
-for_window [class="^org.gnome.Nautilus$"] move position center
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 exec --no-startup-id nm-applet

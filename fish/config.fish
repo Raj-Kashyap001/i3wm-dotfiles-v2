@@ -421,8 +421,8 @@ function fish_prompt
     end
 end
 
-fish_vi_key_bindings
-function fish_mode_prompt; end
+# fish_vi_key_bindings
+# function fish_mode_prompt; end
 
 # QT X11 fix
 function check_qt_xcb --on-event fish_prompt

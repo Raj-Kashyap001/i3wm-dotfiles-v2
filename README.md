@@ -4,7 +4,11 @@ My Arch Rice with i3wm and polybar
 
 ## Preview
 
-<img src="./screenshot.png">
+![i3wm rice](./screenshot1.png)
+
+> GUI installer
+
+![Dotinst](./screenshot2.png)
 
 ## Features
 
