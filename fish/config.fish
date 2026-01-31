@@ -353,13 +353,15 @@ set -gx PATH $PATH "$HOME/go/bin"
 
 set -gx PATH $PATH "$HOME/.local/bin" 
 
+set -gx EDITOR "nvim"
+set -gx VISUAL "nvim"
 
 alias c clear
 alias q exit
 
 
-set -gx QT_QPA_PLATFORMTHEME "qt5ct"
-set -gx QT_STYLE_OVERRIDE "qt5ct-style"
+set -gx QT_QPA_PLATFORMTHEME "qt6ct"
+# set -gx QT_STYLE_OVERRIDE "qt5ct-style"
 
 function fish_prompt
     set -l last_status $status
@@ -428,6 +430,7 @@ end
 function check_qt_xcb --on-event fish_prompt
     if test "$XDG_SESSION_TYPE" = "x11"
         set -gx QT_QPA_PLATFORM xcb
+        set -gx QT_QPA_PLATFORMTHEME_QT6 gtk3
     end
 end
 

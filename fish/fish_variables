@@ -1,5 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
+SETUVAR FREETYPE_PROPERTIES:truetype\x3ainterpreter\x2dversion\x3d35
 SETUVAR __fish_initialized:4300
 SETUVAR fish_greeting:
 SETUVAR fish_user_paths:/home/raj/\x2ebun/bin

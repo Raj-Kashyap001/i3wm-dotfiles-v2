@@ -37,7 +37,7 @@ window {
 
     enabled:                     true;
     border:                      1px solid;
-    border-radius:               15px;
+    border-radius:               0px;
     border-color:                @bg-alt;
     background-color:            @bg;
 }
