@@ -28,7 +28,9 @@ ICON_MAP = {
     "pycharm":                 "",
     "goland":                  "",
     "webstorm":                "",
+    "jetbrains-studio":        "",
     "androidstudio":           "",
+    "studio":                  "",
 
     # Browsers
     "firefox":                 "",
@@ -114,12 +116,14 @@ ICON_MAP = {
     "top":            "󰭄",
     "systemmonitor":  "󰭄",
     "ksysguard":      "󰭄",
-
+    "obs":            "󰑋",
     "settings":       "󰒓",   # nf-md-cog
     "gnome-settings": "󰒓",
 
 
     # Office / Docs
+    "winword.exe":         "󱎒",
+    "excel.exe":           "󱎏",
     "libreoffice":         "",  # nf-fa-file_text
     "soffice.bin":         "󰈙",
     "libreoffice-writer":  "󰈙",
@@ -168,50 +172,72 @@ BG_OCCUPIED = "#1f2335"   # darker bg
 BG_EMPTY    = "#16161e"   # very dark
 
 
-def class_to_icon(window_class: str | None) -> str:
-    """Map a WM_CLASS string to a Nerd Font icon."""
-    if not window_class:
+def class_to_icon(win_class: str | None, win_name: str | None) -> str:
+    """Map WM_CLASS or Window Title to a Nerd Font icon."""
+    # 1. Check Window Name (Title) first - Best for Web Apps/Chrome
+    if win_name:
+        name_lower = win_name.lower()
+        if "whatsapp" in name_lower:
+            return "󰖣"  # WhatsApp icon
+        if "spotify" in name_lower:
+            return ""  # Spotify icon
+        if "discord" in name_lower:
+            return "󰙯"
+
+    # 2. Check WM_CLASS
+    if not win_class:
         return DEFAULT_ICON
-    key = window_class.strip().lower()
+    
+    key = win_class.strip().lower()
+    
+    # Exact match in ICON_MAP
     if key in ICON_MAP:
         return ICON_MAP[key]
+    
+    # Partial match in ICON_MAP
     for name, icon in ICON_MAP.items():
         if name in key:
             return icon
+            
     return DEFAULT_ICON
 
-
-def get_focused_class(workspace) -> str | None:
-    """
-    Get the window_class of the focused window in this workspace.
-    Falls back to the first leaf window if nothing is focused.
-    """
+def get_focused_info(workspace):
+    """Returns (window_class, window_name) for the focused window in workspace."""
     focused = workspace.find_focused()
-    if focused and focused.window_class:
-        return focused.window_class
+    if focused and focused.name: # i3ipc uses .name for the window title
+        return focused.window_class, focused.name
+    
+    # Fallback to the first window if workspace isn't globally focused
     leaves = workspace.leaves()
-    return leaves[0].window_class if leaves else None
-
+    if leaves:
+        return leaves[0].window_class, leaves[0].name
+        
+    return None, None
 
 def render(i3: i3ipc.Connection) -> str:
     parts = []
     tree = i3.get_tree()
-
-    # Get the workspaces sorted by number
     workspaces = sorted(tree.workspaces(), key=lambda w: w.num)
 
     for ws_con in workspaces:
-        leaves   = ws_con.leaves()
+        leaves = ws_con.leaves()
         occupied = len(leaves) > 0
-        focused_ws = tree.find_focused().workspace()
-        active = focused_ws and focused_ws.id == ws_con.id
+        focused_node = tree.find_focused()
+        # Find if this workspace is the active one
+        active = False
+        temp = focused_node
+        while temp:
+            if temp.type == 'workspace' and temp.id == ws_con.id:
+                active = True
+                break
+            temp = temp.parent
 
         # 1. Determine Icon
         if occupied:
-            icon = class_to_icon(get_focused_class(ws_con))
+            win_class, win_name = get_focused_info(ws_con)
+            icon = class_to_icon(win_class, win_name)
         else:
             icon = DEFAULT_ICON
-
         # 2. Determine Style based on state
         if active:
             fg = "#f9e2af"        # dark text
