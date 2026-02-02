@@ -1,0 +1,38 @@
+{
+  "module_templates": {
+    "custom/script": {
+      "type": "custom/script",
+      "exec": "",
+      "interval": "5",
+      "label": "%output%"
+    },
+    "custom/text": {
+      "type": "custom/text",
+      "content": "",
+      "click-left": ""
+    },
+    "internal/battery": {
+      "type": "internal/battery",
+      "battery": "BAT0",
+      "adapter": "AC",
+      "format-charging": "<label-charging>",
+      "format-discharging": "<label-discharging>",
+      "label-charging": "%percentage%%",
+      "label-discharging": "%percentage%%"
+    },
+    "internal/temperature": {
+      "type": "internal/temperature",
+      "thermal-zone": "0",
+      "warn-temperature": "60",
+      "format": "<label>",
+      "label": "%temperature-c%"
+    },
+    "internal/filesystem": {
+      "type": "internal/filesystem",
+      "mount-0": "/",
+      "interval": "25",
+      "format-mounted": "<label-mounted>",
+      "label-mounted": "%percentage_used%%"
+    }
+  }
+}
