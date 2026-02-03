@@ -17,10 +17,13 @@ for_window [class="^.*"] border pixel 2
 # Don't fullscreen first window on workspace
 for_window [workspace=".*"] fullscreen disable
 
+# No border for dock type window's
+for_window [window_type="dock"] border none
+
 # Gaps
-gaps inner 4 px
-gaps outer 2 px
-smart_gaps off
+gaps inner 2
+gaps outer 2
+smart_gaps on
 smart_borders on
 
 # ============================================================================
@@ -322,8 +325,11 @@ for_window [class="^org.gnome.Nautilus$"] floating enable
 for_window [class="^org.gnome.Nautilus$"] move position center
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# Gnome Polkit
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
 exec --no-startup-id nm-applet
-exec_always --no-startup-id picom -b
 exec --no-startup-id greenclip daemon
 exec --no-startup-id dunst
 exec --no-startup-id waypaper --restore
@@ -331,3 +337,5 @@ exec --no-startup-id dbus-update-activation-environment --systemd QT_QPA_PLATFOR
 exec_always --no-startup-id xrandr --output HDMI-1 --mode 1920x1080 --rate 74.97
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec_always --no-startup-id autotiling
+
+
