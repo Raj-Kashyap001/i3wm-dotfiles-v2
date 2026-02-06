@@ -359,6 +359,7 @@ set -gx VISUAL "nvim"
 alias c clear
 alias q exit
 
+alias cat bat
 
 set -gx QT_QPA_PLATFORMTHEME "qt6ct"
 # set -gx QT_STYLE_OVERRIDE "qt5ct-style"
