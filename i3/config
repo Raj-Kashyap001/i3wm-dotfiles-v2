@@ -128,7 +128,7 @@ bindsym $mod+Shift+a focus child
 floating_modifier $mod
 
 # Scratchpad
-bindsym $mod+Shift+s move scratchpad
+bindsym $mod+Mod1+s move scratchpad
 bindsym $mod+Shift+t scratchpad show
 
 # Wallpaper Chnage
@@ -248,22 +248,23 @@ bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 # ============================================================================
 # SCREENSHOTS WITH NOTIFICATIONS
 # ============================================================================
+# Full screen - Saved to folder
+bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%H-%S').png" && notify-send "Screenshot saved" "Full screen captured"
 
-# Full screen
-bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%M-%S').png" && notify-send "Screenshot saved" "Full screen captured"
+# Active window - Saved to folder
+bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%H-%S').png" && notify-send "Screenshot saved" "Window captured"
 
-# Active window
-bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%M-%S').png" && notify-send "Screenshot saved" "Window captured"
+# Select area - Saved to folder
+bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%H-%S').png" && notify-send "Screenshot saved" "Selection captured"
 
-# Select area
-bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/Screenshots/$(date '+%Y-%m-%d_%H-%M-%S').png" && notify-send "Screenshot saved" "Selection captured"
+# --- Clipboard Screenshots ---
 
-# Clipboard screenshots
+# Full screen to Clipboard
 bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png && notify-send "Screenshot copied" "Full screen to clipboard"
 
+# Active window to Clipboard
 bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png && notify-send "Screenshot copied" "Window to clipboard"
 
-bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png && notify-send "Screenshot copied" "Selection to clipboard"
 
 # ============================================================================
 # UTILITY BINDINGS
@@ -326,8 +327,9 @@ for_window [class="^org.gnome.Nautilus$"] move position center
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
-# Gnome Polkit
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+# Polkit
+exec --no-startup-id /usr/lib/polkit-kde-authentication-agent-1
+     
 
 exec --no-startup-id nm-applet
 exec --no-startup-id greenclip daemon
@@ -338,4 +340,7 @@ exec_always --no-startup-id xrandr --output HDMI-1 --mode 1920x1080 --rate 74.97
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec_always --no-startup-id autotiling
 
+
+# Capture portion of screen to clipboard
+bindsym $mod+Shift+s exec --no-startup-id ~/.config/i3/scripts/screenshot.sh
 

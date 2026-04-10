@@ -1,9 +1,10 @@
 # Font Configuration
-font_size 12.0
+font_size 14.0
+font_family Jetbrains Mono Nerd Font
 
 # Window Configuration
 window_padding_width 12
-background_opacity 1.0
+background_opacity 1
 background_blur 32
 hide_window_decorations yes
 
@@ -33,5 +34,6 @@ tab_bar_align left
 shell_integration enabled
 
 # Dank color generation
-include dank-tabs.conf
 include dank-theme.conf
+include dank-tabs.conf
+
