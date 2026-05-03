@@ -2,7 +2,28 @@
 import dbus
 import signal
 import time
+import os
+import configparser
 from unicodedata import east_asian_width
+
+# Get the path to current-theme.ini
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+THEME_FILE = os.path.join(os.path.dirname(SCRIPT_DIR), "themes", "current-theme.ini")
+
+def get_colors():
+    config = configparser.ConfigParser()
+    config.read(THEME_FILE)
+    colors = config['colors']
+    return {
+        'fg': colors.get('foreground', '#c0caf5'),
+        'green': colors.get('green', '#9ece6a'),
+        'background_alt': colors.get('background-alt', '#313244'),
+        'primary': colors.get('primary', '#7aa2f7'),
+        'secondary': colors.get('secondary', '#bb9af7'),
+        'alert': colors.get('alert', '#f7768e'),
+    }
+
+COLORS = get_colors()
 
 # Config options
 
@@ -96,19 +117,29 @@ def update_prefix_suffix(player_name="", status=""):
     if player_name != "":
         player_option = "-p " + player_name
 
-    display_suffix = ""
+    # Control icons
+    prev_icon = control_chars[0]
+    play_icon = control_chars[1]
+    pause_icon = control_chars[2]
+    next_icon = control_chars[3]
+    
+    # Theme colors
+    fg = COLORS['fg']
 
     if status == "Playing":
-        icon = "  "
-        color = "#9ece6a"
-    elif status == "Paused":
-        icon = ""
-        color = "#313244"
+        play_pause_icon = pause_icon
     else:
-        icon = "  "
-        color = "#9ece6a"
+        play_pause_icon = play_icon
 
-    display_prefix = "%%{A:playerctl %s play-pause:}%%{A3:i3-msg '[class=\"chromium\"] focus':}%%{F%s}%s%%{F-}  " % (player_option, color, icon)
+    # Prefix with controls using foreground color
+    display_prefix = (
+        f"%{{A1:playerctl {player_option} previous:}}%{{F{fg}}}{prev_icon}%{{F-}}%{{A}} "
+        f"%{{A1:playerctl {player_option} play-pause:}}%{{F{fg}}}{play_pause_icon}%{{F-}}%{{A}} "
+        f"%{{A1:playerctl {player_option} next:}}%{{F{fg}}}{next_icon}%{{F-}}%{{A}} "
+        f" "
+    )
+    
+    display_suffix = ""
 
 def update_players():
     global player_names, players, session_bus, current_player, last_player_name
@@ -204,10 +235,15 @@ def print_text():
         print("", flush = True)
         return
     scroll()
-    print(display_prefix +
-        "%%{T%d}" % (font_index) +
+    # Construct output string manually to avoid % issues with formatting
+    output = (
+        display_prefix +
+        f"%{{T{font_index}}}" +
         make_visual_len(display_text, message_display_len) +
-        "%{T-}" + display_suffix + "%{A}%{A}", flush=True)
+        "%{T-}" + 
+        display_suffix
+    )
+    print(output, flush=True)
 
 def main():
     global current_player, players

@@ -20,12 +20,14 @@ My Arch Rice with i3wm and polybar
 - polybar
 - waypaper
 - feh
-- nm-applet
+- nm-applet or network-manager-applet
 - playerctl
 - picom
 - [rofi-emoji-git](https://github.com/Mange/rofi-emoji) (for emoji picker) 
+- playerctl
 - python-dbus
 - python-i3ipc
+- [autotiling](https://github.com/nwg-piotr/autotiling) (optional)
 
 `Below Only if you need GUI dotfiles installer`
 

@@ -8,7 +8,29 @@ Install: pip install i3ipc
 """
 
 import i3ipc
+import os
+import configparser
 from i3ipc import Event
+
+# Get the path to current-theme.ini
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+THEME_FILE = os.path.join(os.path.dirname(SCRIPT_DIR), "themes", "current-theme.ini")
+
+def get_colors():
+    config = configparser.ConfigParser()
+    config.read(THEME_FILE)
+    colors = config['colors']
+    return {
+        'fg_active': colors.get('yellow', '#f9e2af'),
+        'fg_occupied': colors.get('foreground', '#c0caf5'),
+        'fg_empty': colors.get('disabled', '#414868'),
+        'bg_active': colors.get('background-alt', '#24283b'),
+        'bg_occupied': colors.get('background', '#1b1b26'),
+        'bg_empty': colors.get('background', '#16161e'),
+        'primary': colors.get('primary', '#7aa2f7'),
+    }
+
+COLORS = get_colors()
 
 # ─── Icon Map ────────────────────────────────────────────────────────
 # Keys are lowercased WM_CLASS strings. Add more as needed.
@@ -164,37 +186,24 @@ ICON_MAP = {
 # Default icon when no app match is found
 DEFAULT_ICON = "󰊠"
 
-FG_ACTIVE   = "#f9e2af"   # tertiary  — active workspace icon
-FG_OCCUPIED = "#c0caf5"   # foreground — occupied but not focused
-FG_EMPTY    = "#414868"   # disabled  — empty workspace
-BG_ACTIVE   = "#24283b"   # background-alt (active)
-BG_OCCUPIED = "#1f2335"   # darker bg
-BG_EMPTY    = "#16161e"   # very dark
-
-
 def class_to_icon(win_class: str | None, win_name: str | None) -> str:
     """Map WM_CLASS or Window Title to a Nerd Font icon."""
-    # 1. Check Window Name (Title) first - Best for Web Apps/Chrome
     if win_name:
         name_lower = win_name.lower()
         if "whatsapp" in name_lower:
-            return "󰖣"  # WhatsApp icon
+            return "󰖣"
         if "spotify" in name_lower:
-            return ""  # Spotify icon
+            return ""
         if "discord" in name_lower:
             return "󰙯"
 
-    # 2. Check WM_CLASS
     if not win_class:
         return DEFAULT_ICON
     
     key = win_class.strip().lower()
-    
-    # Exact match in ICON_MAP
     if key in ICON_MAP:
         return ICON_MAP[key]
     
-    # Partial match in ICON_MAP
     for name, icon in ICON_MAP.items():
         if name in key:
             return icon
@@ -204,10 +213,9 @@ def class_to_icon(win_class: str | None, win_name: str | None) -> str:
 def get_focused_info(workspace):
     """Returns (window_class, window_name) for the focused window in workspace."""
     focused = workspace.find_focused()
-    if focused and focused.name: # i3ipc uses .name for the window title
+    if focused and focused.name:
         return focused.window_class, focused.name
     
-    # Fallback to the first window if workspace isn't globally focused
     leaves = workspace.leaves()
     if leaves:
         return leaves[0].window_class, leaves[0].name
@@ -223,7 +231,6 @@ def render(i3: i3ipc.Connection) -> str:
         leaves = ws_con.leaves()
         occupied = len(leaves) > 0
         focused_node = tree.find_focused()
-        # Find if this workspace is the active one
         active = False
         temp = focused_node
         while temp:
@@ -232,31 +239,28 @@ def render(i3: i3ipc.Connection) -> str:
                 break
             temp = temp.parent
 
-        # 1. Determine Icon
         if occupied:
             win_class, win_name = get_focused_info(ws_con)
             icon = class_to_icon(win_class, win_name)
         else:
             icon = DEFAULT_ICON
-        # 2. Determine Style based on state
+
         if active:
-            fg = "#f9e2af"        # dark text
-            bg = "#414868"        # bright highlight (tertiary)
-            ul = f"%{{u#f9e2af}}%{{+u}}"
+            fg = COLORS['fg_active']
+            bg = COLORS['bg_active']
+            ul = f"%{{u{COLORS['fg_active']}}}%{{+u}}"
         elif occupied:
-            fg = FG_OCCUPIED
-            bg = BG_OCCUPIED
-            ul = "%{-u}" # Disable underline
+            fg = COLORS['fg_occupied']
+            bg = COLORS['bg_occupied']
+            ul = "%{-u}"
         else:
-            fg = FG_EMPTY
-            bg = BG_EMPTY
+            fg = COLORS['fg_empty']
+            bg = COLORS['bg_empty']
             ul = "%{-u}"
 
         num = ws_con.num
         click = f"i3-msg workspace {ws_con.name}"
 
-        # 3. Construct the label
-        # We put the Underline tag at the start and the Reset tag at the end
         label = (
             f"{ul}"
             f"%{{B{bg}}}"
@@ -267,34 +271,26 @@ def render(i3: i3ipc.Connection) -> str:
 
         parts.append(f"%{{A1:{click}:}}{label}%{{A}}")
 
-    # Join with a space for separation between workspace buttons
     return " ".join(parts)
 
 def on_workspace(i3: i3ipc.Connection, event):
     print(render(i3), flush=True)
 
-
 def on_window(i3: i3ipc.Connection, event):
     print(render(i3), flush=True)
 
-
 def main():
     i3 = i3ipc.Connection()
-
-    # Initial render
     print(render(i3), flush=True)
-
-    # Subscribe using i3.on() + Event enum
     i3.on(Event.WORKSPACE_FOCUS, on_workspace)
     i3.on(Event.WORKSPACE_INIT,  on_workspace)
     i3.on(Event.WORKSPACE_EMPTY, on_workspace)
     i3.on(Event.WINDOW_FOCUS,    on_window)
     i3.on(Event.WINDOW_NEW,      on_window)
     i3.on(Event.WINDOW_CLOSE,    on_window)
-
-    # Block forever, dispatching events
+    i3.on(Event.WINDOW_MOVE,     on_window)
+    i3.on(Event.WINDOW_TITLE,    on_window)
     i3.main()
-
 
 if __name__ == "__main__":
     main()
