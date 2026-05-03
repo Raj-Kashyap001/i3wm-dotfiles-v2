@@ -10,18 +10,20 @@ from unicodedata import east_asian_width
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 THEME_FILE = os.path.join(os.path.dirname(SCRIPT_DIR), "themes", "current-theme.ini")
 
+
 def get_colors():
     config = configparser.ConfigParser()
     config.read(THEME_FILE)
-    colors = config['colors']
+    colors = config["colors"]
     return {
-        'fg': colors.get('foreground', '#c0caf5'),
-        'green': colors.get('green', '#9ece6a'),
-        'background_alt': colors.get('background-alt', '#313244'),
-        'primary': colors.get('primary', '#7aa2f7'),
-        'secondary': colors.get('secondary', '#bb9af7'),
-        'alert': colors.get('alert', '#f7768e'),
+        "fg": colors.get("foreground", "#c0caf5"),
+        "green": colors.get("green", "#9ece6a"),
+        "background_alt": colors.get("background-alt", "#313244"),
+        "primary": colors.get("primary", "#7aa2f7"),
+        "secondary": colors.get("secondary", "#bb9af7"),
+        "alert": colors.get("alert", "#f7768e"),
     }
+
 
 COLORS = get_colors()
 
@@ -37,26 +39,28 @@ font_index = 1
 update_delay = 0.3
 
 # (list) : list of chars containing previous, play, pause, next glyphs for media controls in respective order
-control_chars = ['','','','']
+control_chars = ["", "", "", ""]
 
 # (list) : colors for control chars in Catppuccin theme
-control_colors = ['#bb9af7', '#7aa2f7', '#f7768e', '#9ece6a']
+control_colors = ["#bb9af7", "#7aa2f7", "#f7768e", "#9ece6a"]
 
 # (dict) : dict of char icons to display as prefix.
 # If player name is available as key, then use the corressponding icon,
 # else default key value.
 # example:
 display_player_prefix = {
-    "spotify":  '  ',
-    "firefox":  '',
-    "google-chrome":  '  ',
-    "chromium": '  ',
-    "default":  ''
+    "spotify": "  ",
+    "firefox": "",
+    "google-chrome": "  ",
+    "chromium": "  ",
+    "default": "",
 }
 
 # (list) : list of metadata fields based on mpris sepecification.
 # For more details/ field names, refer [mpris sepecification](https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/)
-metadata_fields = ["xesam:title", "xesam:artist"]
+metadata_fields = [
+    "xesam:title",
+]
 
 # (char) : separator for metadata fields
 metadata_separator = "•"
@@ -76,37 +80,50 @@ last_player_name = None
 
 session_bus = dbus.SessionBus()
 
-def get_name(player_name ):
+
+def get_name(player_name):
     if player_name not in player_names:
         return
     name = ".".join(player_name.split(".")[3:])
     return name
+
 
 def get_name_by_index(index):
     if index >= len(player_names):
         return
     return get_name(player_names[index])
 
+
 def get_status(player):
     status = ""
     try:
-        status = player.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus', dbus_interface='org.freedesktop.DBus.Properties')
+        status = player.Get(
+            "org.mpris.MediaPlayer2.Player",
+            "PlaybackStatus",
+            dbus_interface="org.freedesktop.DBus.Properties",
+        )
     except Exception as e:
         pass
     return status
 
+
 def get_metadata(player):
     metadata = {}
     try:
-        metadata = player.Get('org.mpris.MediaPlayer2.Player', 'Metadata', dbus_interface='org.freedesktop.DBus.Properties')
+        metadata = player.Get(
+            "org.mpris.MediaPlayer2.Player",
+            "Metadata",
+            dbus_interface="org.freedesktop.DBus.Properties",
+        )
     except Exception as e:
         pass
     return metadata
 
+
 def update_prefix_suffix(player_name="", status=""):
     global display_prefix, display_suffix, status_paused
 
-    status_paused = (status == "Paused")
+    status_paused = status == "Paused"
 
     if player_name == "":
         display_prefix = ""
@@ -122,9 +139,9 @@ def update_prefix_suffix(player_name="", status=""):
     play_icon = control_chars[1]
     pause_icon = control_chars[2]
     next_icon = control_chars[3]
-    
+
     # Theme colors
-    fg = COLORS['fg']
+    fg = COLORS["fg"]
 
     if status == "Playing":
         play_pause_icon = pause_icon
@@ -138,17 +155,26 @@ def update_prefix_suffix(player_name="", status=""):
         f"%{{A1:playerctl {player_option} next:}}%{{F{fg}}}{next_icon}%{{F-}}%{{A}} "
         f" "
     )
-    
+
     display_suffix = ""
+
 
 def update_players():
     global player_names, players, session_bus, current_player, last_player_name
-    player_names = [service  for service in session_bus.list_names() if service.startswith('org.mpris.MediaPlayer2.')]
-    players = [session_bus.get_object(service, '/org/mpris/MediaPlayer2') for service in player_names]
+    player_names = [
+        service
+        for service in session_bus.list_names()
+        if service.startswith("org.mpris.MediaPlayer2.")
+    ]
+    players = [
+        session_bus.get_object(service, "/org/mpris/MediaPlayer2")
+        for service in player_names
+    ]
     if last_player_name != get_name(current_player):
         for index, player in enumerate(player_names):
             if get_name(player) == last_player_name:
                 current_player = index
+
 
 def handle_event(*args):
     global current_player, players, last_player_name
@@ -158,10 +184,21 @@ def handle_event(*args):
     current_player += 1
     current_player %= len(players)
     last_player_name = get_name_by_index(current_player)
+
+
 #    print("SIGUSR1: updated values - current_player = %d  players len = %d"%(current_player,len(players)))
 
+
 def update_message():
-    global players, current_player,player_names, message, display_text, message_display_len, display_suffix, last_player_name
+    global \
+        players, \
+        current_player, \
+        player_names, \
+        message, \
+        display_text, \
+        message_display_len, \
+        display_suffix, \
+        last_player_name
     if len(players) == 0:
         tmp_message = "No player available"
         update_prefix_suffix()
@@ -179,12 +216,14 @@ def update_message():
                 if type(result) == dbus.Array and len(result) > 0:
                     result = result[0]
                 if not result or (type(result) == dbus.Array and len(result) == 0):
-                    result = "-- "+field.split(":")[1]
+                    result = "-- " + field.split(":")[1]
                 metadata_string_list.append(str(result))
-            metadata_string = (" "+metadata_separator+" ").join(metadata_string_list)
+            metadata_string = (" " + metadata_separator + " ").join(
+                metadata_string_list
+            )
             if visual_len(metadata_string) > message_display_len:
                 metadata_string = " " + metadata_string + " |"
-            update_prefix_suffix(name,status)
+            update_prefix_suffix(name, status)
             tmp_message = ""
             if metadata_string:
                 tmp_message += str(metadata_string)
@@ -193,30 +232,33 @@ def update_message():
         message = tmp_message
         display_text = message
 
+
 def scroll():
     global display_text, message_display_len, status_paused
     if not status_paused:
         if visual_len(display_text) > message_display_len:
             display_text = display_text[1:] + display_text[0]
         elif visual_len(display_text) < message_display_len:
-            display_text += " "*(message_display_len - len(display_text))
+            display_text += " " * (message_display_len - len(display_text))
+
 
 def visual_len(text):
     visual_length = 0
     for ch in text:
         width = east_asian_width(ch)
-        if width == 'W' or width == 'F':
+        if width == "W" or width == "F":
             visual_length += 2
         visual_length += 1
     return visual_length
 
+
 def make_visual_len(text, visual_desired_length):
     visual_length = 0
-    altered_text = ''
+    altered_text = ""
     for char in text:
         if visual_length < visual_desired_length:
             width = east_asian_width(char)
-            if width == 'W' or width == 'F':
+            if width == "W" or width == "F":
                 visual_length += 2
             else:
                 visual_length += 1
@@ -224,26 +266,34 @@ def make_visual_len(text, visual_desired_length):
         else:
             break
     if visual_length == visual_desired_length + 1:
-        altered_text = altered_text[:-1] + ' '
+        altered_text = altered_text[:-1] + " "
     elif visual_length < visual_desired_length:
-        altered_text += ' ' * (visual_desired_length - visual_length)
+        altered_text += " " * (visual_desired_length - visual_length)
     return altered_text
 
+
 def print_text():
-    global display_text, message_display_len, players, player_names, display_prefix, display_suffix
-    if hide_output and len(players)==0:
-        print("", flush = True)
+    global \
+        display_text, \
+        message_display_len, \
+        players, \
+        player_names, \
+        display_prefix, \
+        display_suffix
+    if hide_output and len(players) == 0:
+        print("", flush=True)
         return
     scroll()
     # Construct output string manually to avoid % issues with formatting
     output = (
-        display_prefix +
-        f"%{{T{font_index}}}" +
-        make_visual_len(display_text, message_display_len) +
-        "%{T-}" + 
-        display_suffix
+        display_prefix
+        + f"%{{T{font_index}}}"
+        + make_visual_len(display_text, message_display_len)
+        + "%{T-}"
+        + display_suffix
     )
     print(output, flush=True)
+
 
 def main():
     global current_player, players
@@ -255,6 +305,7 @@ def main():
         update_message()
         print_text()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     signal.signal(signal.SIGUSR1, handle_event)
     main()

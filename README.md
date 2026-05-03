@@ -22,7 +22,9 @@ My Arch Rice with i3wm and polybar
 - feh
 - nm-applet or network-manager-applet
 - playerctl
-- picom
+- pavucontrol
+- spectacle (already installed in kde desktop)
+- picom (optional, used for blur effect)
 - [rofi-emoji-git](https://github.com/Mange/rofi-emoji) (for emoji picker) 
 - playerctl
 - python-dbus
