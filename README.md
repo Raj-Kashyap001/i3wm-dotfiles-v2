@@ -23,6 +23,9 @@ My Arch Rice with i3wm and polybar
 - nm-applet
 - playerctl
 - picom
+- [rofi-emoji-git](https://github.com/Mange/rofi-emoji) (for emoji picker) 
+- python-dbus
+- python-i3ipc
 
 `Below Only if you need GUI dotfiles installer`
 
