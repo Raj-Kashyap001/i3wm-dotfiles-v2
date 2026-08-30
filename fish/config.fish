@@ -15,7 +15,14 @@ end
 # A copy of fish's internal cd function. This makes it possible to use
 # `alias cd=z` without causing an infinite loop.
 if ! builtin functions --query __zoxide_cd_internal
-    string replace --regex -- '^function cd\s' 'function __zoxide_cd_internal ' <$__fish_data_dir/functions/cd.fish | source
+    if test -f "$__fish_data_dir/functions/cd.fish"
+        string replace --regex -- '^function cd\s' 'function __zoxide_cd_internal ' <$__fish_data_dir/functions/cd.fish | source
+    else
+        # Fish 4.x: cd is embedded, define __zoxide_cd_internal directly
+        function __zoxide_cd_internal --wraps cd
+            builtin cd $argv
+        end
+    end
 end
 
 # cd + custom logic based on the value of _ZO_ECHO.
@@ -352,6 +359,8 @@ set -gx ANDROID_HOME "$HOME/Android/Sdk"
 set -gx PATH $PATH "$HOME/go/bin" 
 
 set -gx PATH $PATH "$HOME/.local/bin" 
+
+set -gx PATH "$HOME/fvm/versions/stable/bin" $PATH
 
 set -gx EDITOR "nvim"
 set -gx VISUAL "nvim"
